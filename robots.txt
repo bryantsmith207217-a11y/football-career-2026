@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://bryantsmith207217-a11y.github.io/soccer-career-2025/sitemap.xml
