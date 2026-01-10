@@ -683,6 +683,18 @@
 		<script src="https://unpkg.com/lucide@latest"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 		<script>
+			// Configure "Notify Me" integrations here.
+			// NOTE: EmailJS uses a public key (safe to ship), but anyone can submit the form,
+			// so keep your EmailJS template/service set up to send ONLY to your inbox.
+			window.SC2025_NOTIFY_CONFIG = {
+				emailjsServiceId: 'service_nsz4wtd',
+				emailjsTemplateId: 'template_w2m4rfk',
+				emailjsPublicKey: 'K4-a8vk85azbxnkMv',
+				// Paste your Google Apps Script Web App URL here after you deploy it.
+				sheetsWebAppUrl: 'https://script.google.com/macros/s/AKfycbyR5sGfpW8IAB9OXGCrfi3J8pzR-ZQkb7etT08YL1c3MkXxnloDiV5S0yZurWg5XZWS/exec',
+			};
+		</script>
+		<script>
 			const SCREENSHOTS = [
 				{
 					url: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/695de63fdb8c6b1d262471db/c99eac32d_Screenshot_20251219_082452.jpg',
@@ -894,15 +906,18 @@
 				if (!form || !input || !button || !buttonText || !spinner || !message) return;
 
 				let timeoutId = null;
+				let emailjsInitialized = false;
 				const LOCAL_KEY = 'sc2025_notify_queue_v1';
 				const LAST_SUBMIT_KEY = 'sc2025_notify_last_submit_v1';
 				const SUBMIT_COOLDOWN_MS = 10_000;
 
-				const EMAILJS_SERVICE_ID = '';
-				const EMAILJS_TEMPLATE_ID = 'template_w2m4rfk';
-				const EMAILJS_PUBLIC_KEY = '';
+				const CONFIG = (window.SC2025_NOTIFY_CONFIG && typeof window.SC2025_NOTIFY_CONFIG === 'object') ? window.SC2025_NOTIFY_CONFIG : {};
 
-				const SHEETS_WEB_APP_URL = '';
+				const EMAILJS_SERVICE_ID = String(CONFIG.emailjsServiceId || '');
+				const EMAILJS_TEMPLATE_ID = String(CONFIG.emailjsTemplateId || 'template_w2m4rfk');
+				const EMAILJS_PUBLIC_KEY = String(CONFIG.emailjsPublicKey || '');
+
+				const SHEETS_WEB_APP_URL = String(CONFIG.sheetsWebAppUrl || '');
 
 				function isProbablyValidEmail(email) {
 					return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -930,10 +945,101 @@
 					}
 				}
 
-				function upsertQueueEntry(entry) {
+				function updateQueueEntry(entryId, patch) {
+					const items = readQueue();
+					const idx = items.findIndex((it) => it && it.id === entryId);
+					if (idx === -1) return;
+					items[idx] = { ...items[idx], ...patch };
+					writeQueue(items);
+				}
+
+				function enqueueEntry(entry) {
 					const items = readQueue();
 					items.unshift(entry);
 					writeQueue(items.slice(0, 250));
+				}
+
+				async function sendViaEmailJS(email, timestamp) {
+					if (!(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY && window.emailjs)) return false;
+					if (!emailjsInitialized) {
+						window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+						emailjsInitialized = true;
+					}
+					await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { email, timestamp });
+					return true;
+				}
+
+				async function sendToSheets(email, timestamp) {
+					if (!SHEETS_WEB_APP_URL) return false;
+					const payload = JSON.stringify({ email, timestamp, source: 'soccer-career-2025' });
+					try {
+						const res = await fetch(SHEETS_WEB_APP_URL, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: payload,
+						});
+						return res.ok;
+					} catch {
+						// GitHub Pages -> Apps Script often triggers CORS blocks.
+						// We can still send the request using no-cors; the response will be opaque.
+						try {
+							await fetch(SHEETS_WEB_APP_URL, {
+								method: 'POST',
+								mode: 'no-cors',
+								headers: { 'Content-Type': 'application/json' },
+								body: payload,
+							});
+							return true;
+						} catch {
+							return false;
+						}
+					}
+				}
+
+				function hasAnyRemoteConfigured() {
+					const emailjsConfigured = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
+					const sheetsConfigured = Boolean(SHEETS_WEB_APP_URL);
+					return emailjsConfigured || sheetsConfigured;
+				}
+
+				async function trySendEntry(entry) {
+					let emailjsStatus = entry.emailjs;
+					let sheetsStatus = entry.sheets;
+
+					try {
+						if (emailjsStatus !== 'sent') {
+							const ok = await sendViaEmailJS(entry.email, entry.timestamp);
+							if (ok) emailjsStatus = 'sent';
+							else if (!EMAILJS_SERVICE_ID || !EMAILJS_PUBLIC_KEY) emailjsStatus = 'not-configured';
+						}
+					} catch {
+						emailjsStatus = 'failed';
+					}
+
+					try {
+						if (sheetsStatus !== 'logged') {
+							const ok = await sendToSheets(entry.email, entry.timestamp);
+							if (ok) sheetsStatus = 'logged';
+							else if (!SHEETS_WEB_APP_URL) sheetsStatus = 'not-configured';
+						}
+					} catch {
+						sheetsStatus = 'failed';
+					}
+
+					updateQueueEntry(entry.id, { emailjs: emailjsStatus, sheets: sheetsStatus });
+					return { emailjs: emailjsStatus, sheets: sheetsStatus };
+				}
+
+				async function flushQueue() {
+					if (!hasAnyRemoteConfigured()) return;
+					const items = readQueue();
+					for (const entry of items) {
+						if (!entry || !entry.id) continue;
+						const needsEmailjs = entry.emailjs !== 'sent' && entry.emailjs !== 'not-configured';
+						const needsSheets = entry.sheets !== 'logged' && entry.sheets !== 'not-configured';
+						if (!needsEmailjs && !needsSheets) continue;
+						await trySendEntry(entry);
+					}
 				}
 
 				function setStatus(status, text) {
@@ -953,6 +1059,11 @@
 					input.disabled = loading;
 					spinner.classList.toggle('hidden', !loading);
 				}
+
+				window.addEventListener('online', () => {
+					flushQueue().catch(() => undefined);
+				});
+				flushQueue().catch(() => undefined);
 
 				form.addEventListener('submit', async (e) => {
 					e.preventDefault();
@@ -979,28 +1090,13 @@
 					setLoading(true);
 					buttonText.textContent = 'Sending';
 					const timestamp = nowIso();
-					upsertQueueEntry({ email, timestamp, emailjs: 'pending', sheets: 'pending' });
+					const id = `${email}|${timestamp}`;
+					enqueueEntry({ id, email, timestamp, emailjs: 'pending', sheets: 'pending' });
 
 					try {
-						let emailjsOk = false;
-						let sheetsOk = false;
-
-						if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY && window.emailjs) {
-							window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-							await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { email, timestamp });
-							emailjsOk = true;
-						}
-
-						if (SHEETS_WEB_APP_URL) {
-							const res = await fetch(SHEETS_WEB_APP_URL, {
-								method: 'POST',
-								headers: { 'Content-Type': 'application/json' },
-								body: JSON.stringify({ email, timestamp, source: 'soccer-career-2025' }),
-							});
-							if (res.ok) sheetsOk = true;
-						}
-
-						upsertQueueEntry({ email, timestamp, emailjs: emailjsOk ? 'sent' : 'not-configured', sheets: sheetsOk ? 'logged' : 'not-configured' });
+						const result = await trySendEntry({ id, email, timestamp, emailjs: 'pending', sheets: 'pending' });
+						const emailjsOk = result.emailjs === 'sent';
+						const sheetsOk = result.sheets === 'logged';
 
 						input.value = '';
 						buttonText.textContent = 'Saved';
@@ -1011,7 +1107,7 @@
 						} else if (!emailjsOk && sheetsOk) {
 							setStatus('success', "✓ Added. Sheets logging is on; EmailJS isn't configured yet.");
 						} else {
-							setStatus('success', "✓ Saved on this device. Connect EmailJS + Google Sheets to enable real notifications + logging.");
+							setStatus('success', "✓ Saved on this device. We'll auto-send it when EmailJS/Sheets are configured.");
 						}
 					} catch (err) {
 						buttonText.textContent = 'Try Again';
