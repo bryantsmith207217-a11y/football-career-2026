@@ -3,12 +3,72 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Soccer Career 2025</title>
-		<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-        <link rel="icon" type="image/svg+xml" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.ico">
-        <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-        <link rel="manifest" href="site.webmanifest">
+		<title>Soccer Career 2025 - Football Career Simulator for Android (Coming Soon)</title>
+		<meta
+			name="description"
+			content="Soccer Career 2025 is a player-focused football career simulator for Android phones. Train, manage energy, play matches, and rise from prospect to legend."
+		/>
+		<meta name="robots" content="index,follow" />
+		<link rel="canonical" href="https://bryantsmith207217-a11y.github.io/soccer-career-2025/" />
+
+		<meta property="og:title" content="Soccer Career 2025 - Football Career Simulator for Android" />
+		<meta
+			property="og:description"
+			content="Soccer Career 2025 is a player-focused football career simulator for Android phones. Train, manage energy, play matches, and rise from prospect to legend."
+		/>
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://bryantsmith207217-a11y.github.io/soccer-career-2025/" />
+		<meta property="og:image" content="https://bryantsmith207217-a11y.github.io/soccer-career-2025/favicon/web-app-manifest-512x512.png" />
+		<meta property="og:image:alt" content="Soccer Career 2025 app icon" />
+		<meta property="og:site_name" content="Soccer Career 2025" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Soccer Career 2025 - Football Career Simulator for Android" />
+		<meta
+			name="twitter:description"
+			content="Soccer Career 2025 is a player-focused football career simulator for Android phones. Train, manage energy, play matches, and rise from prospect to legend."
+		/>
+		<meta name="twitter:image" content="https://bryantsmith207217-a11y.github.io/soccer-career-2025/favicon/web-app-manifest-512x512.png" />
+		<meta name="twitter:image:alt" content="Soccer Career 2025 app icon" />
+
+		<meta name="theme-color" content="#0b73da" />
+
+		<link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+		<link rel="preconnect" href="https://unpkg.com" crossorigin />
+		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+		<link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png" />
+		<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg" />
+		<link rel="shortcut icon" href="favicon/favicon.ico" />
+		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+		<link rel="manifest" href="favicon/site.webmanifest" />
+
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": ["MobileApplication", "VideoGame"],
+				"name": "Soccer Career 2025",
+				"description": "Soccer Career 2025 is a player-focused football career simulator for Android phones. Train, manage energy, play matches, and rise from prospect to legend.",
+				"applicationCategory": "GameApplication",
+				"operatingSystem": "Android",
+				"url": "https://bryantsmith207217-a11y.github.io/soccer-career-2025/",
+				"image": "https://bryantsmith207217-a11y.github.io/soccer-career-2025/favicon/web-app-manifest-512x512.png",
+				"publisher": {
+					"@type": "Person",
+					"name": "Bryant Prosper Smith Jr."
+				},
+				"developer": {
+					"@type": "Person",
+					"name": "Bryant Prosper Smith Jr."
+				},
+				"offers": {
+					"@type": "Offer",
+					"availability": "https://schema.org/PreOrder",
+					"description": "Coming soon to Google Play (targeting late January 2026).",
+					"url": "https://bryantsmith207217-a11y.github.io/soccer-career-2025/"
+				}
+			}
+		</script>
 
 
 		<script src="https://cdn.tailwindcss.com"></script>
@@ -68,6 +128,12 @@
 		</style>
 	</head>
 	<body class="min-h-screen bg-[#0b0f19] text-white overflow-x-hidden">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:bg-[#0b0f19] focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:ring-2 focus:ring-blue-500/70"
+		>
+			Skip to content
+		</a>
 		<!-- Gradient background effects -->
 		<div class="fixed inset-0 pointer-events-none">
 			<div
@@ -82,7 +148,7 @@
 		</div>
 
 		<!-- Navigation bar -->
-		<nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#0b0f19]/80 border-b border-white/5">
+		<nav class="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#0b0f19]/80 border-b border-white/5" aria-label="Primary">
 			<div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
 				<a href="#" class="flex items-center gap-3">
 					<div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
@@ -92,8 +158,11 @@
 				</a>
 
 				<div class="flex items-center gap-6">
+					<a href="#about" class="text-white/60 hover:text-white transition-colors text-sm hidden md:block">About</a>
 					<a href="#features" class="text-white/60 hover:text-white transition-colors text-sm hidden md:block">Features</a>
 					<a href="#screenshots" class="text-white/60 hover:text-white transition-colors text-sm hidden md:block">Screenshots</a>
+					<a href="#quality" class="text-white/60 hover:text-white transition-colors text-sm hidden md:block">Quality</a>
+					<a href="#faq" class="text-white/60 hover:text-white transition-colors text-sm hidden md:block">FAQ</a>
 					<a
 						href="#cta"
 						class="px-4 py-2 rounded-lg bg-blue-600/20 text-blue-400 text-sm font-semibold border border-blue-500/30 hover:bg-blue-600/30 transition-colors"
@@ -105,7 +174,7 @@
 		</nav>
 
 		<!-- Main content -->
-		<main class="relative z-10">
+		<main id="main-content" class="relative z-10">
 			<!-- Hero -->
 			<section class="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20">
 				<!-- Animated background gradients -->
@@ -139,7 +208,8 @@
 
 					<!-- Tagline -->
 					<p class="reveal text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-						Start as a young prospect. Train, compete, and rise through the football world.
+						Start as a young prospect in a player-focused football career simulator for Android mobile.
+						Train, manage your energy, play matches, and rise through the football world.
 						<span class="text-white/90 font-medium"> Every decision shapes your legacy.</span>
 					</p>
 
@@ -456,6 +526,72 @@
 					</div>
 				</div>
 			</section>
+
+			<!-- FAQ -->
+			<section id="faq" class="relative py-24 px-4">
+				<div class="max-w-4xl mx-auto">
+					<div class="reveal text-center mb-12">
+						<span class="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-4 block">FAQ</span>
+						<h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight">
+							Questions about
+							<span class="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent"> Soccer Career 2025</span>
+						</h2>
+						<p class="text-white/60 mt-4">Quick answers about gameplay, platforms, offline play, and release timing.</p>
+					</div>
+
+					<div class="space-y-4">
+						<details class="reveal group rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6">
+							<summary class="cursor-pointer list-none flex items-center justify-between gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f19] rounded-xl">
+								<span class="text-lg font-semibold text-white">What is Soccer Career 2025?</span>
+								<i data-lucide="chevron-down" class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180"></i>
+							</summary>
+							<div class="mt-4 text-white/70 leading-relaxed">
+								Soccer Career 2025 is a player-focused football career simulator for Android. You control one player&mdash;train, manage energy, play matches, earn transfers, and build your legacy.
+							</div>
+						</details>
+
+						<details class="reveal group rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6">
+							<summary class="cursor-pointer list-none flex items-center justify-between gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f19] rounded-xl">
+								<span class="text-lg font-semibold text-white">Is it offline?</span>
+								<i data-lucide="chevron-down" class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180"></i>
+							</summary>
+							<div class="mt-4 text-white/70 leading-relaxed">
+								Offline play is supported for core gameplay. Some optional features (like cloud save) may require an internet connection when available.
+							</div>
+						</details>
+
+						<details class="reveal group rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6">
+							<summary class="cursor-pointer list-none flex items-center justify-between gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f19] rounded-xl">
+								<span class="text-lg font-semibold text-white">When is the release date?</span>
+								<i data-lucide="chevron-down" class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180"></i>
+							</summary>
+							<div class="mt-4 text-white/70 leading-relaxed">
+								The goal is a launch in late January 2026. The exact date will be announced closer to release.
+							</div>
+						</details>
+
+						<details class="reveal group rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6">
+							<summary class="cursor-pointer list-none flex items-center justify-between gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f19] rounded-xl">
+								<span class="text-lg font-semibold text-white">Is it pay-to-win?</span>
+								<i data-lucide="chevron-down" class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180"></i>
+							</summary>
+							<div class="mt-4 text-white/70 leading-relaxed">
+								No. Soccer Career 2025 follows a fair monetization approach&mdash;no pay-to-win mechanics or unfair competitive advantages.
+							</div>
+						</details>
+
+						<details class="reveal group rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-6">
+							<summary class="cursor-pointer list-none flex items-center justify-between gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f19] rounded-xl">
+								<span class="text-lg font-semibold text-white">What platforms will it be on?</span>
+								<i data-lucide="chevron-down" class="w-5 h-5 text-white/60 transition-transform group-open:rotate-180"></i>
+							</summary>
+							<div class="mt-4 text-white/70 leading-relaxed">
+								The initial release is planned for Android via Google Play. Other platforms may be considered later.
+							</div>
+						</details>
+					</div>
+				</div>
+			</section>
 		</main>
 
 		<!-- Footer -->
@@ -478,6 +614,7 @@
 						<a href="#about" class="text-white/50 hover:text-white transition-colors text-sm">About</a>
 						<a href="#features" class="text-white/50 hover:text-white transition-colors text-sm">Features</a>
 						<a href="#screenshots" class="text-white/50 hover:text-white transition-colors text-sm">Screenshots</a>
+						<a href="#faq" class="text-white/50 hover:text-white transition-colors text-sm">FAQ</a>
 					</div>
 
 					<div class="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -505,7 +642,7 @@
 			<button
 				id="lightbox-close"
 				type="button"
-				class="absolute top-4 right-4 text-white hover:bg-white/10 rounded-lg p-2"
+				class="absolute top-4 right-4 text-white hover:bg-white/10 rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/70"
 				aria-label="Close"
 			>
 				<i data-lucide="x" class="w-6 h-6"></i>
@@ -514,7 +651,7 @@
 			<button
 				id="lightbox-prev"
 				type="button"
-				class="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-lg p-2"
+				class="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/70"
 				aria-label="Previous"
 			>
 				<i data-lucide="chevron-left" class="w-8 h-8"></i>
@@ -523,7 +660,7 @@
 			<button
 				id="lightbox-next"
 				type="button"
-				class="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-lg p-2"
+				class="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10 rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/70"
 				aria-label="Next"
 			>
 				<i data-lucide="chevron-right" class="w-8 h-8"></i>
@@ -607,10 +744,10 @@
 					const div = document.createElement('button');
 					div.type = 'button';
 					div.className =
-						'reveal group relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer border border-white/10 bg-slate-900/50 text-left';
+						'reveal group relative aspect-[9/16] rounded-2xl overflow-hidden cursor-pointer border border-white/10 bg-slate-900/50 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0f19]';
 					div.setAttribute('aria-label', `Open screenshot: ${shot.caption}`);
 					div.innerHTML = `
-						<img src="${shot.url}" alt="${shot.caption}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
+						<img src="${shot.url}" alt="Soccer Career 2025 screenshot: ${shot.caption}" loading="lazy" decoding="async" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105" />
 						<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
 							<div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3">
 								<span class="text-white font-medium text-sm">${shot.caption}</span>
@@ -634,7 +771,7 @@
 				if (!lightbox || !img) return;
 
 				img.src = SCREENSHOTS[selectedIndex].url;
-				img.alt = SCREENSHOTS[selectedIndex].caption;
+				img.alt = `Soccer Career 2025 screenshot: ${SCREENSHOTS[selectedIndex].caption}`;
 
 				renderDots();
 				lightbox.classList.remove('hidden');
@@ -670,7 +807,7 @@
 				const img = document.getElementById('lightbox-img');
 				if (!img || selectedIndex === null) return;
 				img.src = SCREENSHOTS[selectedIndex].url;
-				img.alt = SCREENSHOTS[selectedIndex].caption;
+				img.alt = `Soccer Career 2025 screenshot: ${SCREENSHOTS[selectedIndex].caption}`;
 				renderDots();
 			}
 
@@ -684,7 +821,7 @@
 					btn.type = 'button';
 					const active = i === selectedIndex;
 					btn.className =
-						'w-2 h-2 rounded-full transition-all ' +
+						'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/70 w-2 h-2 rounded-full transition-all ' +
 						(active ? 'bg-blue-500 w-4' : 'bg-white/30 hover:bg-white/50');
 					btn.setAttribute('aria-label', `Go to screenshot ${i + 1}`);
 					btn.addEventListener('click', (e) => {
