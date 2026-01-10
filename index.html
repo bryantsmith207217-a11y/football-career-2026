@@ -498,6 +498,15 @@
 							<form id="notify-form" class="max-w-md mx-auto mb-6" novalidate>
 								<div class="flex gap-3">
 									<input
+										id="notify-company"
+										type="text"
+										name="company"
+										autocomplete="off"
+										tabindex="-1"
+										class="hidden"
+										aria-hidden="true"
+									/>
+									<input
 										id="notify-email"
 										type="email"
 										required
@@ -515,7 +524,7 @@
 									</button>
 								</div>
 
-								<p id="notify-message" class="hidden text-sm mt-3"></p>
+								<p id="notify-message" class="hidden text-sm mt-3" role="status" aria-live="polite"></p>
 							</form>
 
 							<div class="flex items-center justify-center gap-2 text-white/40 text-sm">
@@ -876,6 +885,7 @@
 			function initNotifyForm() {
 				const form = document.getElementById('notify-form');
 				const input = document.getElementById('notify-email');
+				const honeypot = document.getElementById('notify-company');
 				const button = document.getElementById('notify-button');
 				const buttonText = document.getElementById('notify-button-text');
 				const spinner = document.getElementById('notify-button-spinner');
@@ -884,6 +894,47 @@
 				if (!form || !input || !button || !buttonText || !spinner || !message) return;
 
 				let timeoutId = null;
+				const LOCAL_KEY = 'sc2025_notify_queue_v1';
+				const LAST_SUBMIT_KEY = 'sc2025_notify_last_submit_v1';
+				const SUBMIT_COOLDOWN_MS = 10_000;
+
+				const EMAILJS_SERVICE_ID = '';
+				const EMAILJS_TEMPLATE_ID = 'template_w2m4rfk';
+				const EMAILJS_PUBLIC_KEY = '';
+
+				const SHEETS_WEB_APP_URL = '';
+
+				function isProbablyValidEmail(email) {
+					return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+				}
+
+				function nowIso() {
+					return new Date().toISOString();
+				}
+
+				function readQueue() {
+					try {
+						const raw = window.localStorage.getItem(LOCAL_KEY);
+						const parsed = raw ? JSON.parse(raw) : [];
+						return Array.isArray(parsed) ? parsed : [];
+					} catch {
+						return [];
+					}
+				}
+
+				function writeQueue(items) {
+					try {
+						window.localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
+					} catch {
+						// ignore
+					}
+				}
+
+				function upsertQueueEntry(entry) {
+					const items = readQueue();
+					items.unshift(entry);
+					writeQueue(items.slice(0, 250));
+				}
 
 				function setStatus(status, text) {
 					message.classList.remove('hidden', 'text-green-400', 'text-red-400');
@@ -906,29 +957,61 @@
 				form.addEventListener('submit', async (e) => {
 					e.preventDefault();
 
+					if (honeypot && String(honeypot.value || '').trim()) {
+						setStatus('success', "✓ You're on the list! We'll notify you when we launch.");
+						return;
+					}
+
 					const email = String(input.value || '').trim();
-					if (!email) return;
+					if (!email || !isProbablyValidEmail(email)) {
+						setStatus('error', 'Please enter a valid email address.');
+						return;
+					}
+
+					const lastSubmitRaw = window.localStorage.getItem(LAST_SUBMIT_KEY);
+					const lastSubmit = lastSubmitRaw ? Number(lastSubmitRaw) : 0;
+					if (Number.isFinite(lastSubmit) && Date.now() - lastSubmit < SUBMIT_COOLDOWN_MS) {
+						setStatus('error', 'Please wait a moment before submitting again.');
+						return;
+					}
+					window.localStorage.setItem(LAST_SUBMIT_KEY, String(Date.now()));
 
 					setLoading(true);
 					buttonText.textContent = 'Sending';
-
-					const EMAILJS_SERVICE_ID = '';
-					const EMAILJS_TEMPLATE_ID = 'template_w2m4rfk';
-					const EMAILJS_PUBLIC_KEY = '';
+					const timestamp = nowIso();
+					upsertQueueEntry({ email, timestamp, emailjs: 'pending', sheets: 'pending' });
 
 					try {
+						let emailjsOk = false;
+						let sheetsOk = false;
+
 						if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY && window.emailjs) {
 							window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-							await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-								email,
-								timestamp: new Date().toISOString(),
+							await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { email, timestamp });
+							emailjsOk = true;
+						}
+
+						if (SHEETS_WEB_APP_URL) {
+							const res = await fetch(SHEETS_WEB_APP_URL, {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ email, timestamp, source: 'soccer-career-2025' }),
 							});
-							input.value = '';
-							buttonText.textContent = 'Sent';
+							if (res.ok) sheetsOk = true;
+						}
+
+						upsertQueueEntry({ email, timestamp, emailjs: emailjsOk ? 'sent' : 'not-configured', sheets: sheetsOk ? 'logged' : 'not-configured' });
+
+						input.value = '';
+						buttonText.textContent = 'Saved';
+						if (emailjsOk && sheetsOk) {
 							setStatus('success', "✓ You're on the list! We'll notify you when we launch.");
+						} else if (emailjsOk && !sheetsOk) {
+							setStatus('success', "✓ Added. Email notification is on; Sheets logging isn't configured yet.");
+						} else if (!emailjsOk && sheetsOk) {
+							setStatus('success', "✓ Added. Sheets logging is on; EmailJS isn't configured yet.");
 						} else {
-							buttonText.textContent = 'Saved';
-							setStatus('success', "✓ Saved locally (EmailJS not configured yet). Set your keys in the script to enable real emails.");
+							setStatus('success', "✓ Saved on this device. Connect EmailJS + Google Sheets to enable real notifications + logging.");
 						}
 					} catch (err) {
 						buttonText.textContent = 'Try Again';
